@@ -9,10 +9,18 @@ addBtn.addEventListener("click", addBtnClicked)
 
 function addBtnClicked(event){
     let usernameInp = document.getElementById("username")
-
     let name = usernameInp.value
 
-    userArray.push({name: name})
+    if(edit_id != null){
+        //edit
+        userArray.splice(edit_id, 1, ({"name" : name}))
+        edit_id = null
+    } else {
+  
+        userArray.push({name: name})
+        //insert
+    }
+
     saveInfo(userArray)
     usernameInp.value = ""
     displayInfo()
@@ -25,9 +33,9 @@ function saveInfo(userArray){
 }
 
 function displayInfo(){
+    let tableBody = document.getElementById("tBody")
     let userArray = JSON.parse(localStorage.getItem("users")) || []
     let tableData = ""
-    let tableBody = document.getElementById("tBody")
     userArray.forEach((user, index) => {
         tableData += `<tr>
         <th scope="row">${index + 1}</th>
@@ -44,7 +52,7 @@ function displayInfo(){
 function editInfo(index){
     edit_id = index;
     usernameInp.value = userArray[edit_id].name
-    addBtn.innerText = "edit"
+    addBtn.innerText = "save changes"       
 }
 
 function deleteInfo(index){
@@ -58,3 +66,25 @@ function deleteInfo(index){
     saveInfo(userArray)
     displayInfo()
 }
+
+const allTr = document.querySelectorAll("#tBody tr")
+const searchInput = document.querySelector("#search")
+const tableBody = document.getElementById("tBody")
+
+searchInput.addEventListener("input", searchResults)
+
+function searchResults(event){
+    const searchStr = event.target.value.toLowerCase()
+    tableBody.innerHTML = ""
+    allTr.forEach((tr) => {
+            const td_in_tr = tr.querySelectorAll("td")
+            if(td_in_tr[0].innerText.toLowerCase().indexOf(searchStr) > -1){
+                tableBody.appendChild(tr)
+            } 
+    })
+    if(tableBody.innerHTML == ""){
+        tableBody.innerHTML = "No records Found"
+    }
+}
+
+
