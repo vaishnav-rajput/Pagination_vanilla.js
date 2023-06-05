@@ -87,4 +87,81 @@ function searchResults(event){
     }
 }
 
+let total_records_tr = document.querySelectorAll("#tBody tr")
+let total_records = total_records_tr.length
+let records_per_page = 5;
+let page_number = 1;
+let total_page = Math.ceil(total_records/records_per_page)
 
+
+generatePage()
+displayRecords()
+
+function displayRecords(){
+    let startIndex = (page_number -1 ) * records_per_page;
+    let endIndex = startIndex + (records_per_page -1)
+    if(endIndex >= total_records){
+        endIndex = total_records -1
+    }
+    let statement = '';
+    for(let i = startIndex; i<=endIndex; i++){
+        statement += `<tr>${total_records_tr[i].innerHTML}</tr>`
+    }
+    tableBody.innerHTML = statement;
+    document.querySelectorAll(".dynamic-item").forEach((item) => {
+        item.classList.remove("active")
+    })
+   document.getElementById(`page${page_number}`).classList.add("active")
+
+   if(page_number == 1){
+    document.getElementById("prevBtn").parentElement.classList.add("disabled")
+   }else{
+    document.getElementById("prevBtn").parentElement.classList.remove("disabled")
+
+   }
+
+   if(page_number == total_page){
+    document.getElementById("nextBtn").parentElement.classList.add("disabled")
+
+   }else{
+    document.getElementById("nextBtn").parentElement.classList.remove("disabled")
+
+   }
+
+}
+
+function generatePage (){
+    let prevBtn =   `<li class="page-item ">
+    <a href="javascript:void(0)" id="prevBtn" class="page-link" onclick="prevBtn()">Previous</a>
+</li>`
+    let nextBtn = ` <li class="page-item"><a id="nextBtn" href="javascript:void(0)" class="page-link" onclick ="nextBtn()">
+    Next
+</a></li>`
+    let buttons = "";
+    let activeClass = "";
+
+    for(let i = 1; i<= total_page;  i++){
+        if(i == 1){
+            activeClass = "active"
+        }else{
+            activeClass = ""
+        }
+        buttons += `<li class="page-item dynamic-item ${activeClass}" id="page${i}">
+        <a href="#" class="page-link">
+            ${i}
+        </a>
+    </li>`
+    }
+   document.getElementById("pagination").innerHTML = `${prevBtn} ${buttons} ${nextBtn}`
+
+}
+
+function prevBtn(){
+    page_number--;
+    displayRecords()
+}
+
+function nextBtn(){
+    page_number++;
+    displayRecords()
+}
